@@ -44,12 +44,6 @@ func Upsert(id uuid.UUID, hash string) (Result, error) {
 	return transact(s)
 }
 
-// AddFileToIPFS takes the contents of
-// func AddFileToIPFS(ipfs core.IpfsNode, contents string) {
-// 	fmt.Printf(ipfs)
-// 	fmt.Printf(contents)
-// }
-
 // transact opens a levelDB from the users' .key_master directory and performs a
 // database operation f. Once the operation is complete the levelDB connection
 // is closed.
