@@ -24,7 +24,7 @@ func Fetch(hash string) ([]byte, error) {
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
 
-	// If the request takes too long, which happens more often then I'd like,
+	// If the request takes too long, which happens more often than I'd like,
 	// cancel the transaction.
 	defer cancel()
 
