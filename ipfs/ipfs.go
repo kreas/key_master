@@ -6,18 +6,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ipfs/go-ipfs/core"
 	"github.com/ipfs/go-ipfs/core/coreunix"
+	coremock "github.com/ipfs/go-ipfs/core/mock"
 )
 
-// AddToIPFS takes the contents of
-func AddToIPFS(ipfs *core.IpfsNode, contents string) (string, error) {
+// Node is jus a mock
+var Node, _ = coremock.NewMockNode()
+
+// Add takes the contents of
+func Add(contents string) (string, error) {
 	c := strings.NewReader(contents)
-	return coreunix.Add(ipfs, c)
+	return coreunix.Add(Node, c)
 }
 
-// FetchFromIPFS fetches data from an IPFS
-func FetchFromIPFS(ipfs *core.IpfsNode, hash string) ([]byte, error) {
+// Fetch fetches data from an IPFS
+func Fetch(hash string) ([]byte, error) {
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
 
@@ -25,7 +28,7 @@ func FetchFromIPFS(ipfs *core.IpfsNode, hash string) ([]byte, error) {
 	// cancel the transaction.
 	defer cancel()
 
-	resp, err := coreunix.Cat(ctx, ipfs, hash)
+	resp, err := coreunix.Cat(ctx, Node, hash)
 
 	if err != nil {
 		return nil, err

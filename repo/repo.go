@@ -2,7 +2,6 @@ package repo // import "github.com/kreas/key_master/repo"
 import (
 	"os/user"
 
-	"github.com/gobuffalo/uuid"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -13,17 +12,14 @@ type DB = *leveldb.DB
 // of the users public key and Hash is the most recent version of the of the
 // records hash as it's stored on IPFS.
 type Result struct {
-	ID   uuid.UUID
+	ID   string
 	Hash string
 }
 
-// Create adds a new record to leveldb
-// ** TODO: the UUID should be replaced with the RIPEMD-160(pk) of the user
-// making the request
-func Create(hash string) (Result, error) {
+// Upsert updates a record to leveldb. If the record doesn't exist create it.
+func Upsert(id string, hash string) (Result, error) {
 	s := func(db DB) Result {
-		id := uuid.Must(uuid.NewV4())
-		db.Put(id.Bytes(), []byte(hash), nil)
+		db.Put([]byte(id), []byte(hash), nil)
 
 		return Result{id, hash}
 	}
@@ -31,14 +27,12 @@ func Create(hash string) (Result, error) {
 	return transact(s)
 }
 
-// Upsert updates a record to leveldb. If the record doesn't exist create it.
-// ** TODO: the UUID should be replaced with the RIPEMD-160(pk) of the user
-// making the request
-func Upsert(id uuid.UUID, hash string) (Result, error) {
+// Get fetchs a record from leveldb.
+func Get(id string) (Result, error) {
 	s := func(db DB) Result {
-		db.Put(id.Bytes(), []byte(hash), nil)
+		data, _ := db.Get([]byte(id), nil)
 
-		return Result{id, hash}
+		return Result{id, string(data)}
 	}
 
 	return transact(s)
